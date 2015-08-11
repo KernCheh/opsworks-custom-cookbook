@@ -86,3 +86,15 @@ Two processes running jobs in different queues
         }
       ]
 ```
+
+Modified to:
+
+```
+{
+  "deploy": {
+    "myapp": {
+      "sneakers_worker": ["Worker1", "Worker2"]
+    }
+  }
+}
+```

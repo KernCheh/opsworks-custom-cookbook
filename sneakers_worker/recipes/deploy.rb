@@ -3,12 +3,25 @@ include_recipe 'sneakers_worker::template'
 include_recipe 'deploy'
 
 node[:deploy].each do |application, deploy|
-
-  if deploy[:application_type] != 'worker'
-    Chef::Log.debug("Skipping sneakers_worker::deploy application #{application} as it is not a worker app")
+  if deploy[:application_type] != 'rails'
+    Chef::Log.debug("Skipping sneakers_worker::deploy application #{application} as it is not an Rails app")
     next
   end
-  Chef::Log.debug("sneakers_worker::deploy application #{application} as it is a  worker app")
+
+  Chef::Log.debug("sneakers_worker::deploy application #{application} as it is a worker app")
+
+  # Write sneakers.rb initializer
+  template "#{deploy[:deploy_to]}/shared/config/sneakers.rb" do
+    source 'sneakers.rb.erb'
+    owner deploy[:user]
+    group deploy[:group]
+    mode '0660'
+    variables :vars => node[:sneakers][application][:options]
+
+    only_if do
+      File.exists?("#{deploy[:deploy_to]}/shared/config")
+    end
+  end
 
   opsworks_deploy_dir do
     user deploy[:user]
@@ -25,7 +38,7 @@ node[:deploy].each do |application, deploy|
   bash "sneakers_worker-#{application}-stop" do
     cwd "#{deploy[:deploy_to]}"
     user 'deploy'
-    code "kill -SIGTERM `cat shared/pids/sneakers.pid`"
+    code "kill -SIGTERM `cat current/sneakers.pid`"
 
     action :nothing
   end

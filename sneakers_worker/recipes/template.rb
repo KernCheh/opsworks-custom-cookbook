@@ -4,8 +4,6 @@ include_recipe 'deploy'
 node[:deploy].each do |application, deploy|
   deploy = node[:deploy][application]
 
-  global = node[:sneakers_worker] || {}
-
   template "/etc/monit/conf.d/#{application}_sneakers_worker.monitrc" do
     source 'sneakers_worker.monitrc.erb'
     owner 'root'
@@ -17,7 +15,7 @@ node[:deploy].each do |application, deploy|
       :dir => deploy[:deploy_to],
       :user => deploy[:user],
       :group => deploy[:group],
-      :sneakers_options => deploy[:sneakers_worker] && deploy[:sneakers_worker][:options]
+      :workers => deploy[:sneakers_worker] && deploy[:sneakers_worker].join(',')
     )
     only_if { deploy[:sneakers_worker] }
   end

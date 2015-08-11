@@ -1,6 +1,6 @@
-check process <%= @app %>_sneakers_worker with pidfile <%= @dir %>/shared/pids/sneakers.pid
-start program = "/bin/su -c 'cd <%= @dir %>/current; /usr/bin/env RAILS_ENV=<%= @env %> bundle exec bin/sneakers <%= @sneakers_options %>' - <%= @user %>"
+check process <%= @app %>_sneakers_worker with pidfile <%= @dir %>/current/sneakers.pid
+start program = "/bin/su -c 'cd <%= @dir %>/current; /usr/bin/env RAILS_ENV=<%= @env %> WORKERS=<%= @workers %> bundle exec rake sneakers:run' - <%= @user %>"
     with timeout 30 seconds
-    stop program = "/bin/su -c '/usr/bin/env kill -SIGTERM `cat <%= @dir %>/shared/pids/sneakers.pid`' - <%= @user %>"
+    stop program = "/bin/su -c '/usr/bin/env kill -SIGTERM `cat <%= @dir %>/current/sneakers.pid`' - <%= @user %>"
     with timeout 30 seconds
   group sneakers_worker
