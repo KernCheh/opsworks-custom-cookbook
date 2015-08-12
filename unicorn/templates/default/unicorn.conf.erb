@@ -43,6 +43,12 @@ before_fork do |server, worker|
       # someone else did our job for us
     end
   end
+
+  <% if node[:unicorn][:rabbitmq] %>
+  if defined?($rabbitmq_connection)
+    $rabbitmq_connection.close
+  end
+  <% end %>
 end
 
 after_fork do |server, worker|
