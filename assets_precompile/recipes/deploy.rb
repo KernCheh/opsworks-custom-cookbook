@@ -19,7 +19,7 @@ node[:deploy].each do |application, deploy|
   # precompile assets into public/assets (which is symlinked to shared assets folder)
   execute "rake assets:precompile" do
     cwd release_path
-    command "/bin/su deploy -c 'bundle exec rake assets:precompile'"
+    command "bundle exec rake assets:precompile"
     environment 'RAILS_ENV' => node[:deploy][application][:rails_env]
   end
 
