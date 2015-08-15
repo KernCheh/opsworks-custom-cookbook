@@ -6,6 +6,8 @@ node[:deploy].each do |application, deploy|
       command "touch #{deploy[:deploy_to]}/current/tmp/restart.txt"
     elsif node[:opsworks][:rails_stack][:name].eql? "nginx_unicorn"
       command "#{deploy[:deploy_to]}/shared/scripts/unicorn clean-restart"
+    elsif node[:sidekiq][application]
+      command node[:opsworks][:rails_stack][:restart_command]
     end
     user deploy[:user]
 
